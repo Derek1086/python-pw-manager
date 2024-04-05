@@ -1,0 +1,12 @@
+.note-container {
+  min-width: 300px;
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin-top: 5px;
+}

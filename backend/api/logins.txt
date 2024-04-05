@@ -1,0 +1,3 @@
+{'username': 'newuser55', 'password': 'wizarD101'}
+{'username': 'testuser55', 'password': 'password12345'}
+{'username': 'idk_user', 'password': 'Userpassword500'}
