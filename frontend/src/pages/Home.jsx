@@ -79,7 +79,7 @@ function Home() {
         }
         getNotes();
       })
-      .catch((error) => alert(error));
+      .catch((error) => console.log(error));
   };
 
   const editNote = (id, updatedData) => {
