@@ -1,3 +1,4 @@
+# serializers.py
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from cryptography.fernet import Fernet
@@ -28,38 +29,44 @@ class UserSerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ["id", "title", "content", "created_at", "author"]
+        fields = ["id", "website", "title", "content", "created_at", "author"]
         extra_kwargs = {"author": {"read_only": True}}
 
     def create(self, validated_data):
+        website = validated_data.pop('website') 
         title = validated_data.get('title')
         content = validated_data.get('content')
         
+        encrypted_website = cipher_suite.encrypt(website.encode())
         encrypted_title = cipher_suite.encrypt(title.encode())
         encrypted_content = cipher_suite.encrypt(content.encode())
 
-        print("Title after encryption:", encrypted_title.decode())
-        print("Content after encryption:", encrypted_content.decode())
-
+        validated_data['website'] = encrypted_website.decode()
         validated_data['title'] = encrypted_title.decode()
         validated_data['content'] = encrypted_content.decode()
 
         return super().create(validated_data)
     
     def to_representation(self, instance):
+        decrypted_website = cipher_suite.decrypt(instance.website.encode()).decode()
         decrypted_title = cipher_suite.decrypt(instance.title.encode()).decode()
         decrypted_content = cipher_suite.decrypt(instance.content.encode()).decode()
 
         representation = super().to_representation(instance)
+        representation['website'] = decrypted_website
         representation['title'] = decrypted_title
         representation['content'] = decrypted_content
 
         return representation
 
     def update(self, instance, validated_data):
+        website = validated_data.pop('website', instance.website) 
         title = validated_data.get('title', instance.title)
         content = validated_data.get('content', instance.content)
         
+        if website != instance.website:
+            encrypted_website = cipher_suite.encrypt(website.encode()).decode()
+            instance.website = encrypted_website
         if title != instance.title:
             encrypted_title = cipher_suite.encrypt(title.encode()).decode()
             instance.title = encrypted_title
@@ -69,5 +76,3 @@ class NoteSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-   

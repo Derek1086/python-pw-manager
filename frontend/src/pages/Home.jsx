@@ -17,8 +17,9 @@ import Header from "../components/Header";
 
 function Home() {
   const [notes, setNotes] = useState([]);
-  const [content, setContent] = useState("");
+  const [website, setWebsite] = useState("");
   const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [snackbarConfig, setSnackbarConfig] = useState({
     open: false,
@@ -35,6 +36,7 @@ function Home() {
   }, [searchQuery]);
 
   const handleEditNote = (note) => {
+    setWebsite(note.website);
     setTitle(note.title);
     setContent(note.content);
     setOpen(true);
@@ -43,6 +45,7 @@ function Home() {
   };
 
   const clearModal = () => {
+    setWebsite("");
     setTitle("");
     setContent("");
     setOpen(false);
@@ -55,8 +58,10 @@ function Home() {
       .get("/api/notes/")
       .then((res) => res.data)
       .then((data) => {
-        const filteredNotes = data.filter((note) =>
-          note.title.toLowerCase().includes(searchQuery.toLowerCase())
+        const filteredNotes = data.filter(
+          (note) =>
+            note.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            note.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setNotes(filteredNotes);
       })
@@ -83,12 +88,12 @@ function Home() {
   };
 
   const editNote = (id, updatedData) => {
-    const { title, content } = updatedData;
+    const { website, title, content } = updatedData;
 
-    if (!title.trim() || !content.trim()) {
+    if (!website.trim() || !title.trim() || !content.trim()) {
       setSnackbarConfig({
         open: true,
-        message: "Title or content cannot be empty.",
+        message: "Fields cannot be empty.",
         severity: "error",
       });
       return;
@@ -121,7 +126,7 @@ function Home() {
     e.preventDefault();
     if (!editing) {
       api
-        .post("/api/notes/", { content, title })
+        .post("/api/notes/", { website, content, title })
         .then((res) => {
           if (res.status === 201) {
             setSnackbarConfig({
@@ -150,6 +155,7 @@ function Home() {
         });
     } else {
       const updatedData = {
+        website: website,
         title: title,
         content: content,
       };
@@ -177,6 +183,17 @@ function Home() {
         <Card className="form-container">
           <form onSubmit={createNote}>
             <Stack spacing={2}>
+              <CustomFilledInput
+                type="username"
+                id="filled-adornment-website"
+                value={website}
+                error={
+                  snackbarConfig.severity === "error" &&
+                  snackbarConfig.open === true
+                }
+                content="Website"
+                onChange={setWebsite}
+              />
               <CustomFilledInput
                 type="username"
                 id="filled-adornment-user"

@@ -9,6 +9,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 function censorText(text) {
   return "*".repeat(text.length);
@@ -24,6 +25,18 @@ function Note({ note, onDelete, onEdit }) {
 
   return (
     <Card className="note-container">
+      <Typography
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "20px",
+        }}
+        variant="h5"
+      >
+        {note.website}
+      </Typography>
       <List sx={{ width: "100%", padding: "20px" }}>
         <Paper
           elevation={3}
