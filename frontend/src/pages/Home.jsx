@@ -19,6 +19,7 @@ function Home() {
   const [notes, setNotes] = useState([]);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [snackbarConfig, setSnackbarConfig] = useState({
     open: false,
     message: "",
@@ -31,7 +32,7 @@ function Home() {
 
   useEffect(() => {
     getNotes();
-  }, []);
+  }, [searchQuery]);
 
   const handleEditNote = (note) => {
     setTitle(note.title);
@@ -54,8 +55,10 @@ function Home() {
       .get("/api/notes/")
       .then((res) => res.data)
       .then((data) => {
-        setNotes(data);
-        console.log(data);
+        const filteredNotes = data.filter((note) =>
+          note.title.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setNotes(filteredNotes);
       })
       .catch((err) => console.log(err));
   };
@@ -158,7 +161,7 @@ function Home() {
     <div>
       <Header navigate={navigate} />
       <div className="search-bar">
-        <SearchBar />
+        <SearchBar setSearchQuery={setSearchQuery} />
       </div>
       <div className="notes-container">
         {notes.map((note) => (
